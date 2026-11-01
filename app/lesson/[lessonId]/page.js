@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { lessonContent } from "@/data/lessons";
 import Mascot from "@/components/Mascot";
@@ -20,8 +20,18 @@ const STYLE_OPTIONS = [
 ];
 
 // The lesson practice page: question, options, feedback, explanation.
-export default function LessonPage({ params }) {
+export default function LessonPage() {
+  return (
+    <Suspense>
+      <LessonPageInner />
+    </Suspense>
+  );
+}
+
+// Inner component reads URL params — must be inside Suspense for cacheComponents.
+function LessonPageInner() {
   const router = useRouter();
+  const params = useParams();
   const {
     ready,
     activeStudent,
@@ -56,7 +66,8 @@ export default function LessonPage({ params }) {
   if (!ready || !activeStudent) return null;
 
   const lang = activeStudent.language ?? "en";
-  const content = lessonContent[params.lessonId];
+  const lessonId = params?.lessonId ?? "";
+  const content = lessonContent[lessonId];
 
   if (!content || !currentQuestion) {
     return (

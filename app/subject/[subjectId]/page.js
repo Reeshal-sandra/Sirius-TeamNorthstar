@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, Suspense } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { subjects } from "@/data/subjects";
 import Mascot from "@/components/Mascot";
@@ -10,8 +10,18 @@ import LessonRow from "@/components/LessonRow";
 import Button from "@/components/Button";
 
 // Subject page: shows subject name and a row per lesson with best score and start button.
-export default function SubjectPage({ params }) {
+export default function SubjectPage() {
+  return (
+    <Suspense>
+      <SubjectPageInner />
+    </Suspense>
+  );
+}
+
+// Inner component reads URL params — must be inside Suspense for cacheComponents.
+function SubjectPageInner() {
   const router = useRouter();
+  const params = useParams();
   const { ready, activeStudent, setLanguage, startLesson } = useApp();
 
   // Wait for context then redirect if no active student.
@@ -22,7 +32,8 @@ export default function SubjectPage({ params }) {
   if (!ready || !activeStudent) return null;
 
   const lang = activeStudent.language ?? "en";
-  const subject = subjects.find((s) => s.id === params.subjectId);
+  const subjectId = params?.subjectId ?? "";
+  const subject = subjects.find((s) => s.id === subjectId);
 
   if (!subject) {
     return (
