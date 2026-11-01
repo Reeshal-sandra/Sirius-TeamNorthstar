@@ -289,6 +289,7 @@ export function AppProvider({ children }) {
     setLanguage,
     setStyle,
     // Lesson
+    lessonId,
     startLesson,
     currentQuestion,
     questionNumber: questionIndex + 1,
